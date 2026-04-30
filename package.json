@@ -1,0 +1,12 @@
+{
+  "name": "@endevco/aube-primer-packages",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "generate": "node scripts/generate.mjs"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
+

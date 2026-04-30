@@ -1,0 +1,31 @@
+name: Refresh package rankings
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 5 1 * *"
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+      - run: npm run generate
+      - name: Commit refreshed rankings
+        run: |
+          if git diff --quiet -- data; then
+            echo "No package ranking changes."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/packages.json data/packages.txt data/packages.sha256
+          git commit -m "chore: refresh package rankings"
+          git push
+
