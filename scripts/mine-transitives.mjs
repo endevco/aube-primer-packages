@@ -17,7 +17,9 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 const ROOT = resolve(__dirname, '..')
 
 const seedsPath = process.env.SEEDS_PATH ?? join(ROOT, 'data/seeds.json')
-const outPath = process.env.TRANSITIVES_OUT ?? join(ROOT, 'data/transitives.json')
+// Single env var for read+write (generate.mjs reads the same path the miner
+// writes); previously there were two names which silently diverged.
+const outPath = process.env.TRANSITIVES_PATH ?? join(ROOT, 'data/transitives.json')
 const concurrency = Math.max(1, Number(process.env.MINER_CONCURRENCY ?? 4))
 
 const seedsDoc = JSON.parse(readFileSync(seedsPath, 'utf8'))
@@ -98,6 +100,14 @@ const output = {
 writeFileSync(outPath, `${JSON.stringify(output, null, 2)}\n`)
 console.error(`\nwrote ${entries.length} packages to ${outPath}`)
 if (failures.length) console.error(`stacks that failed: ${failures.length}`)
+
+// Refuse to claim success when every stack failed (registry outage, network
+// partition, etc.). The previous behaviour silently produced a popularity-only
+// list on the cron path because the empty transitives file looked valid.
+if (output.source.success_count === 0) {
+  console.error('error: no stacks succeeded; not propagating empty transitives')
+  process.exit(1)
+}
 
 function run(cmd, args, opts) {
   return new Promise((res) => {
