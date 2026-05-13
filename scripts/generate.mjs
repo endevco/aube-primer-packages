@@ -1,23 +1,137 @@
 #!/usr/bin/env node
+// Produce `data/packages.json` — the canonical name list aube embeds in its
+// metadata primer.
+//
+// Two inputs are merged:
+//   1. npm-rank popularity (direct-install count, fetched from upstream)
+//   2. cross-stack transitive popularity (mined by scripts/mine-transitives.mjs)
+//
+// The merge keeps the output at exactly TOP_N entries: the top (TOP_N -
+// supplement_size) popularity entries plus every transitive with score
+// >= MIN_STACKS not already in popularity. Net effect: the lowest-rank
+// popularity entries are displaced by the most cross-cutting transitives.
+//
+// Env overrides:
+//   TOP_N=2000                       output size
+//   PACKAGES_URL=<url>               popularity source (defaults to npm-rank)
+//   MIN_STACKS=5                     transitive score threshold
+//   SKIP_MINER=1                     skip mining, use existing transitives.json
+//   TRANSITIVES_PATH=<path>          override transitives source (default: data/transitives.json)
+
 import { createHash } from 'node:crypto'
+import { existsSync, readFileSync } from 'node:fs'
 import { mkdir, writeFile } from 'node:fs/promises'
+import { dirname, resolve } from 'node:path'
+import { spawn } from 'node:child_process'
+import { fileURLToPath } from 'node:url'
+
+const __dirname = dirname(fileURLToPath(import.meta.url))
+const ROOT = resolve(__dirname, '..')
 
 const top = Number(process.env.TOP_N ?? 2000)
 const sourceUrl = process.env.PACKAGES_URL ?? 'https://tristan-f-r.github.io/npm-rank/PACKAGES.html'
-const outDir = new URL('../data/', import.meta.url)
+const minStacks = Number(process.env.MIN_STACKS ?? 5)
+const transitivesPath = resolve(process.env.TRANSITIVES_PATH ?? `${ROOT}/data/transitives.json`)
+// Cap supplement at 10% of TOP_N so a pathologically low MIN_STACKS (or a
+// malformed transitives file) can't wipe out the popularity signal entirely.
+// Override via SUPPLEMENT_MAX_RATIO (e.g. "0.2" for 20%) when intentionally
+// experimenting with larger supplements.
+const supplementMaxRatio = Number(process.env.SUPPLEMENT_MAX_RATIO ?? 0.10)
+const outDir = `${ROOT}/data`
 
 if (!Number.isInteger(top) || top < 1) {
   throw new Error('TOP_N must be a positive integer')
 }
+if (!Number.isInteger(minStacks) || minStacks < 1) {
+  throw new Error('MIN_STACKS must be a positive integer')
+}
+if (!(supplementMaxRatio > 0 && supplementMaxRatio <= 1)) {
+  throw new Error('SUPPLEMENT_MAX_RATIO must be in (0, 1]')
+}
 
-const names = parsePackageNames(await fetchText(sourceUrl)).slice(0, top)
+if (!isTruthyEnv(process.env.SKIP_MINER)) {
+  console.error('mining transitives (set SKIP_MINER=1 to reuse existing transitives.json)')
+  await runScript(`${__dirname}/mine-transitives.mjs`)
+}
+
+const popular = parsePackageNames(await fetchText(sourceUrl))
+const transitives = loadTransitives(transitivesPath, minStacks)
+
+// Pick how many supplement slots we actually need: only transitives that
+// don't already appear in the top-N popular list need promoting.
+// Cap separately at `top * supplementMaxRatio` so a malformed transitives
+// file or pathologically low MIN_STACKS can't displace most of the
+// popularity signal.
+const popularSet = new Set(popular.slice(0, top))
+const supplementCap = Math.floor(top * supplementMaxRatio)
+const supplementNeed = transitives.filter((n) => !popularSet.has(n)).length
+const supplementSize = Math.min(supplementNeed, supplementCap)
+const truncation = top - supplementSize
+const keptSet = new Set(popular.slice(0, truncation))
+
+// Build the supplement by walking transitives in score order, taking any
+// name not already in `kept`. This includes both "not in popular at all"
+// and "in popular's displaced zone (rank ≥ truncation)" — without the
+// keptSet-based filter the latter group silently vanishes (filtered out
+// of supplement by popularSet, also past kept's truncation point).
+const supplement = []
+const seen = new Set(keptSet)
+for (const name of transitives) {
+  if (supplement.length >= supplementSize) break
+  if (seen.has(name)) continue
+  supplement.push(name)
+  seen.add(name)
+}
+
+const kept = popular.slice(0, truncation)
+const names = [...kept, ...supplement]
 
 await mkdir(outDir, { recursive: true })
 const json = `${JSON.stringify(names, null, 2)}\n`
-await writeFile(new URL('packages.json', outDir), json)
-await writeFile(new URL('packages.txt', outDir), `${names.join('\n')}\n`)
-await writeFile(new URL('packages.sha256', outDir), `${sha256(json)}  packages.json\n`)
-console.error(`wrote ${names.length} package names`)
+await writeFile(`${outDir}/packages.json`, json)
+await writeFile(`${outDir}/packages.txt`, `${names.join('\n')}\n`)
+await writeFile(`${outDir}/packages.sha256`, `${sha256(json)}  packages.json\n`)
+console.error(
+  `wrote ${names.length} package names ` +
+  `(${kept.length} popularity + ${supplement.length} transitives, ` +
+  `threshold ≥${minStacks}, supplement cap ${supplementCap})`,
+)
+
+function loadTransitives(path, threshold) {
+  if (!existsSync(path)) {
+    console.error(`transitives file ${path} not found; emitting popularity-only list`)
+    return []
+  }
+  const doc = JSON.parse(readFileSync(path, 'utf8'))
+  const pkgs = Array.isArray(doc) ? doc : doc.packages
+  if (!Array.isArray(pkgs)) {
+    throw new Error(`${path}: expected array or {packages: array}`)
+  }
+  // Plain-string entries are an unranked override list — keep them. Object
+  // entries must carry a numeric `score`; missing/non-numeric scores fail the
+  // threshold (default 0, not Infinity) so a malformed transitives file
+  // doesn't silently promote every entry.
+  return pkgs
+    .filter((p) => {
+      if (typeof p === 'string') return true
+      return typeof p?.score === 'number' && p.score >= threshold
+    })
+    .map((p) => (typeof p === 'string' ? p : p?.name))
+    .filter((n) => typeof n === 'string' && n.length > 0)
+}
+
+function isTruthyEnv(value) {
+  if (value === undefined) return false
+  return ['1', 'true', 'yes', 'on'].includes(value.toLowerCase())
+}
+
+function runScript(script) {
+  return new Promise((res, rej) => {
+    const child = spawn('node', [script], { stdio: 'inherit' })
+    child.on('close', (code) => (code === 0 ? res() : rej(new Error(`${script} exited ${code}`))))
+    child.on('error', rej)
+  })
+}
 
 async function fetchText(url) {
   for (let attempt = 1; attempt <= 6; attempt++) {

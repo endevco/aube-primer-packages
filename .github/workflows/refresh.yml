@@ -11,6 +11,11 @@ permissions:
 jobs:
   refresh:
     runs-on: ubuntu-latest
+    # Generation walks every seed stack via `npm install --package-lock-only`
+    # (33 stacks at concurrency=4 takes ~3-5 min on hosted runners), then
+    # downloads + parses the npm-rank popularity HTML. Add headroom for
+    # cold npm-registry caches.
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
@@ -25,7 +30,7 @@ jobs:
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/packages.json data/packages.txt data/packages.sha256
+          git add data/packages.json data/packages.txt data/packages.sha256 data/transitives.json
           git commit -m "chore: refresh package rankings"
           git push
 
