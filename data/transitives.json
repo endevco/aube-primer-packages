@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-13T19:04:26.634Z",
+  "generated_at": "2026-06-01T10:18:12.990Z",
   "source": {
     "seeds_file": "data/seeds.json",
     "stack_count": 33,
@@ -35,30 +35,6 @@
         "vite-svelte-ts",
         "vite-vue-ts",
         "vitest-ts"
-      ]
-    },
-    {
-      "name": "tslib",
-      "score": 18,
-      "stacks": [
-        "astro-react",
-        "cypress",
-        "gatsby-react",
-        "jest-ts",
-        "monorepo-tooling",
-        "nest-api",
-        "next-react-ts",
-        "node-cli",
-        "nuxt-ts",
-        "parcel",
-        "rollup-ts",
-        "sveltekit-ts",
-        "vite-react-ts",
-        "vite-solid-ts",
-        "vite-svelte-ts",
-        "vite-vue-ts",
-        "vitest-ts",
-        "webpack-react"
       ]
     },
     {
@@ -99,6 +75,29 @@
         "rollup-ts",
         "sveltekit-ts",
         "ts-eslint",
+        "vite-react-ts",
+        "vite-solid-ts",
+        "vite-svelte-ts",
+        "vite-vue-ts",
+        "vitest-ts",
+        "webpack-react"
+      ]
+    },
+    {
+      "name": "tslib",
+      "score": 17,
+      "stacks": [
+        "astro-react",
+        "cypress",
+        "gatsby-react",
+        "jest-ts",
+        "monorepo-tooling",
+        "nest-api",
+        "next-react-ts",
+        "nuxt-ts",
+        "parcel",
+        "rollup-ts",
+        "sveltekit-ts",
         "vite-react-ts",
         "vite-solid-ts",
         "vite-svelte-ts",
@@ -801,22 +800,6 @@
       ]
     },
     {
-      "name": "@types/node",
-      "score": 10,
-      "stacks": [
-        "cypress",
-        "drizzle-postgres",
-        "express-api",
-        "fastify-api",
-        "gatsby-react",
-        "jest-ts",
-        "monorepo-tooling",
-        "next-react-ts",
-        "remix",
-        "webpack-react"
-      ]
-    },
-    {
       "name": "acorn",
       "score": 10,
       "stacks": [
@@ -1035,6 +1018,21 @@
       ]
     },
     {
+      "name": "@types/node",
+      "score": 9,
+      "stacks": [
+        "drizzle-postgres",
+        "express-api",
+        "fastify-api",
+        "gatsby-react",
+        "jest-ts",
+        "monorepo-tooling",
+        "next-react-ts",
+        "remix",
+        "webpack-react"
+      ]
+    },
+    {
       "name": "ansi-regex",
       "score": 9,
       "stacks": [
@@ -1226,21 +1224,6 @@
         "parcel",
         "remix",
         "vitest-ts",
-        "webpack-react"
-      ]
-    },
-    {
-      "name": "undici-types",
-      "score": 9,
-      "stacks": [
-        "cypress",
-        "drizzle-postgres",
-        "express-api",
-        "fastify-api",
-        "gatsby-react",
-        "jest-ts",
-        "next-react-ts",
-        "remix",
         "webpack-react"
       ]
     },
@@ -1776,6 +1759,20 @@
         "node-cli",
         "nuxt-ts",
         "remix"
+      ]
+    },
+    {
+      "name": "undici-types",
+      "score": 8,
+      "stacks": [
+        "drizzle-postgres",
+        "express-api",
+        "fastify-api",
+        "gatsby-react",
+        "jest-ts",
+        "next-react-ts",
+        "remix",
+        "webpack-react"
       ]
     },
     {
@@ -5043,16 +5040,6 @@
       ]
     },
     {
-      "name": "rxjs",
-      "score": 4,
-      "stacks": [
-        "gatsby-react",
-        "monorepo-tooling",
-        "nest-api",
-        "node-cli"
-      ]
-    },
-    {
       "name": "set-cookie-parser",
       "score": 4,
       "stacks": [
@@ -6558,6 +6545,15 @@
         "gatsby-react",
         "monorepo-tooling",
         "node-cli"
+      ]
+    },
+    {
+      "name": "rxjs",
+      "score": 3,
+      "stacks": [
+        "gatsby-react",
+        "monorepo-tooling",
+        "nest-api"
       ]
     },
     {
@@ -8439,22 +8435,6 @@
       ]
     },
     {
-      "name": "@types/eslint",
-      "score": 2,
-      "stacks": [
-        "gatsby-react",
-        "webpack-react"
-      ]
-    },
-    {
-      "name": "@types/eslint-scope",
-      "score": 2,
-      "stacks": [
-        "gatsby-react",
-        "webpack-react"
-      ]
-    },
-    {
       "name": "@types/esrecurse",
       "score": 2,
       "stacks": [
@@ -8695,6 +8675,22 @@
       ]
     },
     {
+      "name": "@unrs/resolver-binding-linux-loong64-gnu",
+      "score": 2,
+      "stacks": [
+        "jest-ts",
+        "next-react-ts"
+      ]
+    },
+    {
+      "name": "@unrs/resolver-binding-linux-loong64-musl",
+      "score": 2,
+      "stacks": [
+        "jest-ts",
+        "next-react-ts"
+      ]
+    },
+    {
       "name": "@unrs/resolver-binding-linux-ppc64-gnu",
       "score": 2,
       "stacks": [
@@ -8736,6 +8732,14 @@
     },
     {
       "name": "@unrs/resolver-binding-linux-x64-musl",
+      "score": 2,
+      "stacks": [
+        "jest-ts",
+        "next-react-ts"
+      ]
+    },
+    {
+      "name": "@unrs/resolver-binding-openharmony-arm64",
       "score": 2,
       "stacks": [
         "jest-ts",
@@ -9335,14 +9339,6 @@
       ]
     },
     {
-      "name": "buffer-crc32",
-      "score": 2,
-      "stacks": [
-        "cypress",
-        "nuxt-ts"
-      ]
-    },
-    {
       "name": "bundle-name",
       "score": 2,
       "stacks": [
@@ -9507,14 +9503,6 @@
       "score": 2,
       "stacks": [
         "astro-react",
-        "nuxt-ts"
-      ]
-    },
-    {
-      "name": "css-declaration-sorter",
-      "score": 2,
-      "stacks": [
-        "gatsby-react",
         "nuxt-ts"
       ]
     },
@@ -9828,14 +9816,6 @@
       "stacks": [
         "gatsby-react",
         "nuxt-ts"
-      ]
-    },
-    {
-      "name": "fastest-levenshtein",
-      "score": 2,
-      "stacks": [
-        "gatsby-react",
-        "webpack-react"
       ]
     },
     {
@@ -15417,13 +15397,6 @@
       ]
     },
     {
-      "name": "@rc-component/textarea",
-      "score": 1,
-      "stacks": [
-        "antd-app"
-      ]
-    },
-    {
       "name": "@rc-component/tooltip",
       "score": 1,
       "stacks": [
@@ -16103,6 +16076,20 @@
       ]
     },
     {
+      "name": "@types/eslint",
+      "score": 1,
+      "stacks": [
+        "gatsby-react"
+      ]
+    },
+    {
+      "name": "@types/eslint-scope",
+      "score": 1,
+      "stacks": [
+        "gatsby-react"
+      ]
+    },
+    {
       "name": "@types/estree-jsx",
       "score": 1,
       "stacks": [
@@ -16317,13 +16304,6 @@
       "score": 1,
       "stacks": [
         "jest-ts"
-      ]
-    },
-    {
-      "name": "@types/yauzl",
-      "score": 1,
-      "stacks": [
-        "cypress"
       ]
     },
     {
@@ -17055,6 +17035,13 @@
       ]
     },
     {
+      "name": "buffer-crc32",
+      "score": 1,
+      "stacks": [
+        "nuxt-ts"
+      ]
+    },
+    {
       "name": "byte-size",
       "score": 1,
       "stacks": [
@@ -17469,6 +17456,13 @@
     },
     {
       "name": "crypto-random-string",
+      "score": 1,
+      "stacks": [
+        "gatsby-react"
+      ]
+    },
+    {
+      "name": "css-declaration-sorter",
       "score": 1,
       "stacks": [
         "gatsby-react"
@@ -18049,13 +18043,6 @@
       ]
     },
     {
-      "name": "extract-zip",
-      "score": 1,
-      "stacks": [
-        "cypress"
-      ]
-    },
-    {
       "name": "extsprintf",
       "score": 1,
       "stacks": [
@@ -18112,6 +18099,13 @@
       ]
     },
     {
+      "name": "fastest-levenshtein",
+      "score": 1,
+      "stacks": [
+        "gatsby-react"
+      ]
+    },
+    {
       "name": "fastify",
       "score": 1,
       "stacks": [
@@ -18151,13 +18145,6 @@
       "score": 1,
       "stacks": [
         "gatsby-react"
-      ]
-    },
-    {
-      "name": "fd-slicer",
-      "score": 1,
-      "stacks": [
-        "cypress"
       ]
     },
     {
@@ -19526,13 +19513,6 @@
       ]
     },
     {
-      "name": "lodash.defaults",
-      "score": 1,
-      "stacks": [
-        "nuxt-ts"
-      ]
-    },
-    {
       "name": "lodash.every",
       "score": 1,
       "stacks": [
@@ -19551,13 +19531,6 @@
       "score": 1,
       "stacks": [
         "gatsby-react"
-      ]
-    },
-    {
-      "name": "lodash.isarguments",
-      "score": 1,
-      "stacks": [
-        "nuxt-ts"
       ]
     },
     {
